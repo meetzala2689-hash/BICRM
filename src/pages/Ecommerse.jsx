@@ -9,6 +9,7 @@ import {
   Legend,
 } from "chart.js";
 import { Bar, Pie } from "react-chartjs-2";
+import { UserPlus } from "lucide-react";
 
 ChartJS.register(
   BarElement,
@@ -110,9 +111,16 @@ function Ecommerce() {
               border: "none",
               boxShadow: "0 4px 14px 0 rgba(79, 70, 229, 0.39)",
             }}
-            onClick={() => setShowAddModal(true)}
+            onClick={() => {
+              setShowAddModal(true);
+              localStorage.setItem("showAddModal", "true");
+            }}
           >
-            <span className="me-2">+</span>New Entry
+            <UserPlus size={18} />
+
+            <span className="d-none d-sm-inline">New Entry</span>
+
+            <span className="d-inline d-sm-none">+</span>
           </button>
         </div>
 

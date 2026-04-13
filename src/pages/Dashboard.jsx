@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Bar } from "react-chartjs-2";
 import { putData, getData } from "../utils/indexedDB";
+import { UserPlus } from "lucide-react";
 
 const statsData = [
   {
@@ -233,12 +234,26 @@ function Dashboard() {
             Overview of your business metrics for 2026.
           </p>
         </div>
-        <button
+        {/* <button
           className="btn btn-primary rounded-3 px-4 py-2 fw-semibold shadow-sm transition-all"
           onClick={openModal}
         >
           <i className="bi bi-plus-lg me-2"></i>Add New
+        </button> */}
+        <button
+          className="btn btn-dark py-3 px-4 rounded-4 fw-bold d-flex justify-content-center align-items-center gap-2 shadow-sm"
+          onClick={() => {
+            setShowModal(true);
+            localStorage.setItem("newDashboardModal", "true");
+          }}
+        >
+          <UserPlus size={18} />
+
+          <span className="d-none d-sm-inline">New Dashboard</span>
+
+          <span className="d-inline d-sm-none">+</span>
         </button>
+
       </header>
 
       {/* LOADING & ERROR STATES */}

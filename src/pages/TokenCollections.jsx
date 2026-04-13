@@ -1,3 +1,4 @@
+import { UserPlus } from 'lucide-react';
 import React, { useState } from 'react';
 
 const TokenCollections = () => {
@@ -18,8 +19,22 @@ const TokenCollections = () => {
                     <h2 className="fw-bold text-dark mb-1">Token Collections</h2>
                     <p className="text-muted small mb-0">Manage and track your digital asset performance.</p>
                 </div>
-                <button className="btn btn-primary btn-sm rounded-pill px-4 shadow-sm fw-bold">
+                {/* <button className="btn btn-primary btn-sm rounded-pill px-4 shadow-sm fw-bold">
                     <i className="bi bi-plus-lg me-2" onClick={() => setNewTokenModal(true)}></i>Add Token
+                </button> */}
+
+                <button
+                    className="btn btn-dark py-3 px-4 rounded-4 fw-bold d-flex justify-content-center align-items-center gap-2 shadow-sm"
+                    onClick={() => {
+                        setNewTokenModal(true);
+                        localStorage.setItem("newTokenModal", "true");
+                    }}
+                >
+                    <UserPlus size={18} />
+
+                    <span className="d-none d-sm-inline">New Token</span>
+
+                    <span className="d-inline d-sm-none">+</span>
                 </button>
             </div>
 

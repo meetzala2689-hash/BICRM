@@ -1,3 +1,4 @@
+import { UserPlus } from "lucide-react";
 import React, { useState, useEffect } from "react";
 
 function Employee() {
@@ -107,7 +108,7 @@ function Employee() {
               Team Members
             </h1>
           </div>
-          <button
+          {/* <button
             className="btn btn-dark rounded-pill px-4 py-2 shadow-lg border-0 d-flex align-items-center gap-2"
             onClick={() => setShowModal(true)}
             style={{
@@ -117,6 +118,20 @@ function Employee() {
           >
             <i className="bi bi-plus-circle-fill"></i>
             <span className="fw-bold">Onboard Employee</span>
+          </button> */}
+
+          <button
+            className="btn btn-dark py-3 px-4 rounded-4 fw-bold d-flex justify-content-center align-items-center gap-2 shadow-sm"
+            onClick={() => {
+              setShowModal(true);
+              localStorage.setItem("newTokenModal", "true");
+            }}
+          >
+            <UserPlus size={18} />
+
+            <span className="d-none d-sm-inline">New Employee</span>
+
+            <span className="d-inline d-sm-none">+</span>
           </button>
         </header>
 
@@ -265,153 +280,153 @@ function Employee() {
         </div>
 
         {/* Modal */}
-     {showModal && (
-  <div
-    className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center p-3"
-    style={{
-      background: "rgba(15, 23, 42, 0.8)",
-      backdropFilter: "blur(12px)",
-      zIndex: 2000,
-    }}
-  >
-    <div
-      className="bg-white rounded-5 shadow-2xl w-100 animate__animated animate__fadeInUp"
-      style={{
-        maxWidth: "800px",
-        maxHeight: "90vh",
-        display: "flex",
-        flexDirection: "column",
-        overflow: "hidden",
-        border: "1px solid rgba(255,255,255,0.1)",
-      }}
-    >
-      {/* Header */}
-      <div
-        className="d-flex justify-content-between align-items-start p-5 border-bottom"
-        style={{ flexShrink: 0 }}
-      >
-        <div>
-          <h2
-            className="fw-black mb-1"
-            style={{ fontSize: "1.8rem", letterSpacing: "1px" }}
+        {showModal && (
+          <div
+            className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center p-3"
+            style={{
+              background: "rgba(15, 23, 42, 0.8)",
+              backdropFilter: "blur(12px)",
+              zIndex: 2000,
+            }}
           >
-            New Employee
-          </h2>
-          <p className="text-muted small">
-            Fill in the professional profile of the member.
-          </p>
-        </div>
-        <button
-          className="btn-close bg-light rounded-circle p-3"
-          style={{ border: "none", cursor: "pointer" }}
-          onClick={() => setShowModal(false)}
-        ></button>
-      </div>
-
-      {/* Scrollable Body */}
-      <div className="p-5 overflow-auto" style={{ flex: 1 }}>
-        <form onSubmit={handleSubmit}>
-          <div className="row g-4">
-            {[
-              "id",
-              "number",
-              "name",
-              "surname",
-              "email",
-              "category",
-              "title",
-              "joiningDate",
-              "salary",
-            ].map((field) => (
+            <div
+              className="bg-white rounded-5 shadow-2xl w-100 animate__animated animate__fadeInUp"
+              style={{
+                maxWidth: "800px",
+                maxHeight: "90vh",
+                display: "flex",
+                flexDirection: "column",
+                overflow: "hidden",
+                border: "1px solid rgba(255,255,255,0.1)",
+              }}
+            >
+              {/* Header */}
               <div
-                className={field === "email" ? "col-12" : "col-md-6"}
-                key={field}
+                className="d-flex justify-content-between align-items-start p-5 border-bottom"
+                style={{ flexShrink: 0 }}
               >
-                <label className="text-uppercase small fw-bold text-muted mb-2 ps-1">
-                  {field.replace(/([A-Z])/g, " $1")}
-                </label>
-                <input
-                  type={
-                    field === "joiningDate"
-                      ? "date"
-                      : field === "salary"
-                        ? "number"
-                        : "text"
-                  }
-                  name={field}
-                  className="form-control form-control-lg border-0 bg-light rounded-3 px-4 py-2 fs-6 fw-medium"
-                  placeholder={`Enter ${field}...`}
-                  value={employee[field]}
-                  onChange={(e) => {
-                    if (field === "number") {
-                      // Only allow digits, optional max length
-                      const digitsOnly = e.target.value.replace(/\D/g, "");
-                      setEmployee({ ...employee, [field]: digitsOnly });
-                    } else {
-                      handleChange(e);
-                    }
-                  }}
-                  required
-                />
-              </div>
-            ))}
-
-            {/* Priority */}
-            <div className="col-md-6">
-              <label className="text-uppercase small fw-bold text-muted mb-2 ps-1">
-                Set Priority
-              </label>
-              <div className="d-flex gap-2">
-                {["Low", "Medium", "High"].map((p) => (
-                  <button
-                    key={p}
-                    type="button"
-                    onClick={() =>
-                      setEmployee({ ...employee, priority: p })
-                    }
-                    className={`btn flex-grow-1 rounded-4 py-3 fw-bold`}
-                    style={{
-                      backgroundColor:
-                        employee.priority === p
-                          ? p === "High"
-                            ? "#dc2626"
-                            : p === "Medium"
-                              ? "#f59e0b"
-                              : "#16a34a"
-                          : "#f3f4f6",
-                      color: employee.priority === p ? "#fff" : "#111827",
-                      transition: "all 0.3s",
-                      boxShadow:
-                        employee.priority === p
-                          ? "0 6px 15px rgba(0,0,0,0.2)"
-                          : "none",
-                    }}
+                <div>
+                  <h2
+                    className="fw-black mb-1"
+                    style={{ fontSize: "1.8rem", letterSpacing: "1px" }}
                   >
-                    {p}
-                  </button>
-                ))}
+                    New Employee
+                  </h2>
+                  <p className="text-muted small">
+                    Fill in the professional profile of the member.
+                  </p>
+                </div>
+                <button
+                  className="btn-close bg-light rounded-circle p-3"
+                  style={{ border: "none", cursor: "pointer" }}
+                  onClick={() => setShowModal(false)}
+                ></button>
               </div>
-            </div>
 
-            <div className="col-12 mt-5">
-              <button
-                type="submit"
-                className="btn btn-primary w-100 rounded-pill py-3 fw-black shadow-lg"
-                style={{
-                  background: "linear-gradient(90deg, #3b82f6, #06b6d4)",
-                  fontSize: "1rem",
-                  letterSpacing: "1px",
-                }}
-              >
-                CREATE PROFILE
-              </button>
+              {/* Scrollable Body */}
+              <div className="p-5 overflow-auto" style={{ flex: 1 }}>
+                <form onSubmit={handleSubmit}>
+                  <div className="row g-4">
+                    {[
+                      "id",
+                      "number",
+                      "name",
+                      "surname",
+                      "email",
+                      "category",
+                      "title",
+                      "joiningDate",
+                      "salary",
+                    ].map((field) => (
+                      <div
+                        className={field === "email" ? "col-12" : "col-md-6"}
+                        key={field}
+                      >
+                        <label className="text-uppercase small fw-bold text-muted mb-2 ps-1">
+                          {field.replace(/([A-Z])/g, " $1")}
+                        </label>
+                        <input
+                          type={
+                            field === "joiningDate"
+                              ? "date"
+                              : field === "salary"
+                                ? "number"
+                                : "text"
+                          }
+                          name={field}
+                          className="form-control form-control-lg border-0 bg-light rounded-3 px-4 py-2 fs-6 fw-medium"
+                          placeholder={`Enter ${field}...`}
+                          value={employee[field]}
+                          onChange={(e) => {
+                            if (field === "number") {
+                              // Only allow digits, optional max length
+                              const digitsOnly = e.target.value.replace(/\D/g, "");
+                              setEmployee({ ...employee, [field]: digitsOnly });
+                            } else {
+                              handleChange(e);
+                            }
+                          }}
+                          required
+                        />
+                      </div>
+                    ))}
+
+                    {/* Priority */}
+                    <div className="col-md-6">
+                      <label className="text-uppercase small fw-bold text-muted mb-2 ps-1">
+                        Set Priority
+                      </label>
+                      <div className="d-flex gap-2">
+                        {["Low", "Medium", "High"].map((p) => (
+                          <button
+                            key={p}
+                            type="button"
+                            onClick={() =>
+                              setEmployee({ ...employee, priority: p })
+                            }
+                            className={`btn flex-grow-1 rounded-4 py-3 fw-bold`}
+                            style={{
+                              backgroundColor:
+                                employee.priority === p
+                                  ? p === "High"
+                                    ? "#dc2626"
+                                    : p === "Medium"
+                                      ? "#f59e0b"
+                                      : "#16a34a"
+                                  : "#f3f4f6",
+                              color: employee.priority === p ? "#fff" : "#111827",
+                              transition: "all 0.3s",
+                              boxShadow:
+                                employee.priority === p
+                                  ? "0 6px 15px rgba(0,0,0,0.2)"
+                                  : "none",
+                            }}
+                          >
+                            {p}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="col-12 mt-5">
+                      <button
+                        type="submit"
+                        className="btn btn-primary w-100 rounded-pill py-3 fw-black shadow-lg"
+                        style={{
+                          background: "linear-gradient(90deg, #3b82f6, #06b6d4)",
+                          fontSize: "1rem",
+                          letterSpacing: "1px",
+                        }}
+                      >
+                        CREATE PROFILE
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
-        </form>
-      </div>
-    </div>
-  </div>
-)}
+        )}
       </div>
     </div>
   );

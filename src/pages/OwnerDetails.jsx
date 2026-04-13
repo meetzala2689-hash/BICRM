@@ -155,7 +155,7 @@ function OwnerDetails() {
         <div style={{ backgroundColor: '#f0f2f5', minHeight: '100vh', padding: '40px 20px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             <div className="container" style={{ maxWidth: '1100px' }}>
                 {/* TOP SECTION */}
-                <div className="d-flex flex-column flex-md-row justify-content-between align-items-end mb-5 gap-4">
+                <div className="d-flex flex-column flex-md-row justify-content-between  mb-5 gap-4">
                     <div>
                         <span className="badge bg-primary bg-opacity-10 text-primary mb-2 px-3 py-2 rounded-pill fw-bold">CRM Dashboard</span>
                         <h1 className="fw-black m-0" style={{ color: '#111827', fontSize: '2.5rem', letterSpacing: '-1px' }}>Owner Details</h1>
@@ -188,7 +188,7 @@ function OwnerDetails() {
                                 </div>
                             </div>
 
-                            <div className="col-md-5 d-flex gap-2 justify-content-md-end">
+                            <div className="col-md-5 d-flex gap-2 justify-content-md-end justify-content-between">
                                 <div className="position-relative">
                                     <button
                                         className="btn btn-light border-0 py-3 px-4 rounded-4 fw-bold text-secondary d-flex align-items-center gap-2"
@@ -204,7 +204,7 @@ function OwnerDetails() {
                                         <Filter size={18} /> Filter
                                     </button>
                                     {filterVisible && (
-                                        <div className="position-absolute end-0 mt-1 p-3 bg-white shadow rounded-4" style={{ zIndex: 10, minWidth: '220px' }}>
+                                        <div className="position-absolute mt-1 p-3 bg-white shadow rounded-4" style={{ zIndex: 10, minWidth: '220px' }}>
                                             {/* Small module */}
                                             {!filterExpanded && (
                                                 <div className="d-flex justify-content-between align-items-center">
@@ -392,7 +392,7 @@ function OwnerDetails() {
                                         </div>
                                     )}
                                 </div>
-                                <button
+                                {/* <button
                                     className="btn btn-dark py-3 px-4 rounded-4 fw-bold d-flex align-items-center gap-2 shadow-sm"
                                     onClick={() => {
                                         setNewOwnerDetails({
@@ -425,7 +425,50 @@ function OwnerDetails() {
                                     }} // open modal
                                 >
                                     <UserPlus size={18} /> New Owner Details
+                                </button> */}
+
+
+                                <button
+                                    className="btn btn-dark py-3 px-4 rounded-4 fw-bold d-flex justify-content-center align-items-center gap-2 shadow-sm"
+                                    onClick={() => {
+
+                                        setNewOwnerDetails({
+                                            ownerName: "",
+                                            phone: "",
+                                            alternatePhone: "",
+                                            email: "",
+                                            preferredTime: "",
+                                            country: "",
+                                            state: "",
+                                            city: "",
+                                            pincode: "",
+                                            address: "",
+
+                                            idType: "",
+                                            idNumber: "",
+                                            ownershipType: "",
+                                            panNumber: "",
+                                            gstNumber: "",
+                                            bankDetails: "",
+
+                                            ownedProperties: "",
+                                            isVerified: false,
+                                            ownerStatus: "",
+
+                                            notes: "",
+                                        });
+
+                                        setNewOwnerDetailsModal(true);
+                                        localStorage.setItem("newOwnerDetailsModal", "true");
+                                    }}
+                                >
+                                    <UserPlus size={18} />
+
+                                    <span className="d-none d-sm-inline">New Owner Details</span>
+
+                                    <span className="d-inline d-sm-none">+</span>
                                 </button>
+
 
                                 {/* New Owner Details Modal */}
                                 {newOwnerDetailsModal && (

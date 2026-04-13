@@ -12,6 +12,8 @@ function Navbar({ toggleSidebar }) {
     navigate("/");
   };
   // console.log("navbar");
+
+
   return (
     <div>
       <nav
@@ -20,7 +22,7 @@ function Navbar({ toggleSidebar }) {
       >
         <div className="container-fluid">
           <button
-            className="btn btn-dark me-2 d-md-none"
+            className="btn btn-dark py-2 px-3 rounded-4 fw-bold d-flex justify-content-center align-items-center gap-2 shadow-sm me-2 mb-3 d-md-none"
             onClick={toggleSidebar}
           >
             ☰

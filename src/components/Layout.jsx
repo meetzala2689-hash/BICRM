@@ -9,8 +9,11 @@ const Layout = () => {
   return (
     <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
       {/* Sidebar - should have fixed width or be responsive */}
-      <Sidebar open={sidebarOpen} />
-
+      {/* <Sidebar open={sidebarOpen} /> */}
+      <Sidebar
+        open={sidebarOpen}
+        toggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+      />
       {/* Main content area on the right */}
       <div
         style={{

@@ -211,7 +211,7 @@ const PropertyMatching = () => {
                                 </div>
                             </div>
 
-                            <div className="col-md-5 d-flex gap-2 justify-content-md-end">
+                            <div className="col-md-5 d-flex gap-2 justify-content-md-end justify-content-between">
                                 <div className="position-relative">
                                     <button
                                         className="btn btn-light border-0 py-3 px-4 rounded-4 fw-bold text-secondary d-flex align-items-center gap-2"
@@ -228,7 +228,7 @@ const PropertyMatching = () => {
                                     </button>
 
                                     {filterVisible && (
-                                        <div className="position-absolute end-0 mt-1 p-3 bg-white shadow rounded-4" style={{ zIndex: 10, minWidth: '220px' }}>
+                                        <div className="position-absolute mt-1 p-3 bg-white shadow rounded-4" style={{ zIndex: 10, minWidth: '220px' }}>
                                             {/* Small module */}
                                             {!filterExpanded && (
                                                 <div className="d-flex justify-content-between align-items-center">
@@ -420,7 +420,7 @@ const PropertyMatching = () => {
                                     )}
 
                                 </div>
-                                <button
+                                {/* <button
                                     className="btn btn-dark py-3 px-4 rounded-4 fw-bold d-flex align-items-center gap-2 shadow-sm"
                                     onClick={() => {
                                         setEditId(null);
@@ -437,6 +437,30 @@ const PropertyMatching = () => {
                                     }}
                                 >
                                     <UserPlus size={18} /> New Property Matching
+                                </button> */}
+
+
+                                <button
+                                    className="btn btn-dark py-3 px-4 rounded-4 fw-bold d-flex justify-content-center align-items-center gap-2 shadow-sm"
+                                    onClick={() => {
+                                        setNewPropertyMatching({
+                                            clientType: "",
+                                            property: "",
+                                            quotedPrice: "",
+                                            dealStatus: "",
+                                            image: "",
+                                            unit: "",
+                                            location: ""
+                                        });
+                                        setNewPropertyMatchingModal(true);
+                                        localStorage.setItem("newPropertyMatchingModal", "true");
+                                    }}
+                                >
+                                    <UserPlus size={18} />
+
+                                    <span className="d-none d-sm-inline">New Property Matching</span>
+
+                                    <span className="d-inline d-sm-none">+</span>
                                 </button>
 
                                 {/* New Property Matching Modal */}

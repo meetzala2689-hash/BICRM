@@ -1,7 +1,7 @@
 // import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
-function Sidebar({ open }) {
+function Sidebar({ open, toggleSidebar }) {
   const navigate = useNavigate();
   const location = useLocation();
   // const [open, setOpen] = useState(false);
@@ -73,7 +73,7 @@ function Sidebar({ open }) {
         {menuItems.map((item, index) => (
           <button
             key={index}
-            onClick={() => navigate(item.path)}
+            onClick={() => { navigate(item.path); toggleSidebar(); }}
             className={`btn w-100 mb-2 d-flex align-items-center gap-2 text-start ${location.pathname === item.path
               ? "btn-primary text-white"
               : "btn-light text-dark"

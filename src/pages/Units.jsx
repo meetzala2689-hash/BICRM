@@ -136,7 +136,7 @@ const Units = () => {
         <div style={{ backgroundColor: '#f0f2f5', minHeight: '100vh', padding: '40px 20px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             <div className="container" style={{ maxWidth: '1100px' }}>
                 {/* TOP SECTION */}
-                <div className="d-flex flex-column flex-md-row justify-content-between align-items-end mb-5 gap-4">
+                <div className="d-flex flex-column flex-md-row justify-content-between mb-5 gap-4">
                     <div>
                         <span className="badge bg-primary bg-opacity-10 text-primary mb-2 px-3 py-2 rounded-pill fw-bold">CRM Dashboard</span>
                         <h1 className="fw-black m-0" style={{ color: '#111827', fontSize: '2.5rem', letterSpacing: '-1px' }}>Units</h1>
@@ -167,7 +167,7 @@ const Units = () => {
                                 </div>
                             </div>
 
-                            <div className="col-md-5 d-flex gap-2 justify-content-md-end">
+                            <div className="col-md-5 d-flex gap-2 justify-content-md-end justify-content-between">
                                 <div className="position-relative">
                                     <button
                                         className="btn btn-light border-0 py-3 px-4 rounded-4 fw-bold text-secondary d-flex align-items-center gap-2"
@@ -198,7 +198,7 @@ const Units = () => {
                                         ></div>
                                     )}
                                     {filterVisible && (
-                                        <div className="position-absolute end-0 mt-1 p-3 bg-white shadow rounded-4" style={{ zIndex: 10, minWidth: '220px' }}>
+                                        <div className="position-absolute mt-1 p-3 bg-white shadow rounded-4" style={{ zIndex: 10, minWidth: '220px' }}>
                                             {/* Small module */}
                                             {!filterExpanded && (
                                                 <div className="d-flex justify-content-between align-items-center">
@@ -390,13 +390,29 @@ const Units = () => {
                                         </div>
                                     )}
                                 </div>
-                                <button
+                                {/* <button
                                     className="btn btn-dark py-3 px-4 rounded-4 fw-bold d-flex align-items-center gap-2 shadow-sm"
                                     // onClick={() => setNewUnitsModal(true)}
                                     onClick={() => setModalType("new")}
                                 >
                                     <UserPlus size={18} /> New Units
+                                </button> */}
+
+
+                                <button
+                                    className="btn btn-dark py-3 px-4 rounded-4 fw-bold d-flex justify-content-center align-items-center gap-2 shadow-sm"
+                                    onClick={() => {
+                                        setModalType("new");
+                                        localStorage.setItem("modalType", "new");
+                                    }}
+                                >
+                                    <UserPlus size={18} />
+
+                                    <span className="d-none d-sm-inline">New Units</span>
+
+                                    <span className="d-inline d-sm-none">+</span>
                                 </button>
+
 
                                 {modalType && (
                                     <div className="modal fade show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}>

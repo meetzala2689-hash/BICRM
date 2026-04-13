@@ -4,6 +4,7 @@ import html2canvas from "html2canvas";
 import ReactDOM from "react-dom/client";
 import { jsPDF } from "jspdf";
 import { FaEdit, FaEye, FaPaperPlane, FaPlus, FaTrash } from "react-icons/fa";
+import { UserPlus } from "lucide-react";
 
 const STYLES = `
   .fw-black { font-weight: 900; }
@@ -171,8 +172,19 @@ function ClientInvoice() {
                 <span className="text-primary fw-bold small text-uppercase tracking-wider">Relationship Manager</span>
                 <h2 className="fw-black text-dark m-0">Clients</h2>
               </div>
-              <button onClick={() => { setShowClientModal(true); resetClientForm(); }} className="btn btn-dark px-4 py-2 shadow-sm border-0 d-flex align-items-center" style={{ borderRadius: "12px", background: "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)" }}>
+              {/* <button onClick={() => { setShowClientModal(true); resetClientForm(); }} className="btn btn-dark px-4 py-2 shadow-sm border-0 d-flex align-items-center" style={{ borderRadius: "12px", background: "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)" }}>
                 <i className="bi bi-plus-lg me-2"></i> <span className="fw-bold">New Client</span>
+              </button> */}
+
+              <button
+                className="btn btn-dark py-3 px-4 rounded-4 fw-bold d-flex justify-content-center align-items-center gap-2 shadow-sm"
+                onClick={() => {
+                  setShowClientModal(true);
+                  localStorage.setItem("newTokenModal", "true");
+                }}>
+                <UserPlus size={18} />
+                <span className="d-none d-sm-inline">New Client</span>
+                <span className="d-inline d-sm-none">+</span>
               </button>
             </div>
 
