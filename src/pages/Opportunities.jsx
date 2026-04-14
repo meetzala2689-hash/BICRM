@@ -110,6 +110,10 @@ function Opportunities() {
     return saved ? JSON.parse(saved) : false;
   });
 
+  useEffect(() => {
+    localStorage.setItem("showAddModal", JSON.stringify(showAddModal));
+  }, [showAddModal]);
+
   const [formData, setFormData] = useState({
     projectCode: "",
     projectName: "",

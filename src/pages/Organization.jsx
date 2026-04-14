@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate } from "react-router-dom";
+import { UserPlus } from "lucide-react";
 
 // --- IndexedDB Helper ---
 const DB_NAME = "bicrm_db";
@@ -86,13 +87,13 @@ function Organization() {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("RAW TOKEN FROM STORAGE:", localStorage.getItem("token"));
+      // console.log("RAW TOKEN FROM STORAGE:", localStorage.getItem("token"));
       if (!response.ok) {
         throw new Error("Failed to fetch organizations");
       }
 
       const data = await response.json();
-      console.log("Fetched organizations:", data);
+      // console.log("Fetched organizations:", data);
 
       const orgs = Array.isArray(data) ? data : (data.data && Array.isArray(data.data)) ? data.data : [];
 
@@ -207,10 +208,16 @@ function Organization() {
               setEditUserId(null);
               setNewEmployee(getInitialEmployeeState());
               setIsModalOpen(true);
+              localStorage.setItem("setNewEmployee", "true");
             }}
-            className="btn btn-primary"
+            className="btn btn-primary py-3 px-4"
           >
-            + Create Organization
+            {/* + Create Organization */}
+            <UserPlus size={18} />
+
+            <span className="d-none d-sm-inline">New Contact</span>
+
+            <span className="d-inline d-sm-none">+</span>
           </button>
         </div>
       </div>
@@ -428,63 +435,9 @@ function Organization() {
           ))}
         </div>
       )}
+
+
       {/* LIST VIEW */}
-      {!loading && !error && view === "list" && (
-
-        <div className="table-responsive">
-          <table className="table table-striped table-bordered">
-            <thead className="table-dark">
-              <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Organization</th>
-                <th>Email</th>
-                <th>Number</th>
-                <th>Department</th>
-                <th>Country</th>
-                <th>State</th>
-                <th>City</th>
-                <th>Street</th>
-                <th>Postal Code</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredUsers.map((user, index) => (
-                <tr key={user.id}>
-                  <td>{index + 1}</td>
-                  <td>{user.name}</td>
-                  <td>{user.organization}</td>
-                  <td>{user.email}</td>
-                  <td>{user.number}</td>
-                  <td>{user.details}</td>
-                  <td>{user.country}</td>
-                  <td>{user.state}</td>
-                  <td>{user.city}</td>
-                  <td>{user.street}</td>
-                  <td>{user.postalCode}</td>
-                  <td className="d-flex gap-2">
-                    <button
-                      onClick={() => navigate("/project")}
-                      className="btn btn-outline-secondary w-50 border-0"
-                    >
-                      <i className="bi bi-eye me-1"></i> View
-                    </button>
-                    <button
-                      className="btn btn-sm btn-primary"
-                      onClick={() => handleEdit(user)}
-                    >
-                      Edit
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {/* ADD/EDIT EMPLOYEE MODAL */}
       {isModalOpen && (
         <div key={editUserId || "new"}>
           {/*  <div> */}
