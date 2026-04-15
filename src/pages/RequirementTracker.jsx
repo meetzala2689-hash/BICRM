@@ -48,16 +48,16 @@ const RequirementTracker = () => {
                 propertyType: "",
                 urgencyLevel: "",
                 purchaseTimeline: "",
-                priorityAreas: "",
+                preferredAreas: "",
                 occupation: "",
                 familySize: "",
                 loanRequired: "",
-                preferredAreas: "",
                 financingType: "",
                 preferredFloor: "",
                 mustHaveAmenities: "",
                 dealBreakers: "",
-                notesDescription: "",
+                notes: "",
+                requirementStatus: "Active",
             };
     });
 
@@ -70,53 +70,29 @@ const RequirementTracker = () => {
         localStorage.setItem("newRequirementTrackerModal", newRequirementTrackerModal);
     }, [newRequirementTrackerModal]);
 
-    const filteredRequirementTracker = requirementTracker.filter(requirementTracker => {
+    const filteredRequirementTracker = (requirementTracker || []).filter(item => {
         const matchesSearch =
-            requirementTracker.property?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            requirementTracker.client?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            requirementTracker.consultant?.toLowerCase().includes(searchTerm.toLowerCase());
+            (item.propertyType || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (item.client || "").toLowerCase().includes(searchTerm.toLowerCase());
 
         const matchesStatus =
-            statusFilter === '' || requirementTracker.requirementStatus === statusFilter;
+            statusFilter === '' || item.requirementStatus === statusFilter;
 
         return matchesSearch && matchesStatus;
     });
 
-    const StatCard = ({ icon, label, value, color }) => (
-        <div
-            className="d-flex align-items-center gap-3 px-4 py-3 rounded-4 transition-all"
-            style={{
-                background: 'white',
-                border: '1px solid rgba(255, 255, 255, 0.8)',
-                boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.04)',
-                flex: '1',
-                minWidth: '200px',
-                borderLeft: `5px solid ${color}`
-            }}
-        >
-            {/* Icon Container with soft background */}
-            <div
-                className="d-flex align-items-center justify-content-center rounded-3"
-                style={{
-                    width: '45px',
-                    height: '45px',
-                    backgroundColor: `${color}15`, // 15% opacity of the theme color
-                    color: color
-                }}
-            >
-                {icon}
-            </div>
 
-            <div>
-                <p className="text-muted fw-bold mb-0" style={{ fontSize: '0.75rem', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-                    {label}
-                </p>
-                <h4 className="fw-black m-0" style={{ color: '#1f2937', fontSize: '1.4rem' }}>
-                    {value}
-                </h4>
-            </div>
-        </div>
-    );
+    const totalRequirementTrackers = (requirementTracker || []).length;
+    const normalize = (v) => (v || "").toLowerCase();
+
+    const activeRequirementTrackers = (requirementTracker || []).filter(
+        (r) => normalize(r.urgencyLevel) === "active" || normalize(r.requirementStatus) === "active"
+    ).length;
+
+    const pendingRequirementTrackers = (requirementTracker || []).filter(
+        (r) => normalize(r.urgencyLevel) === "pending" || normalize(r.requirementStatus) === "pending"
+    ).length;
+
     return (
         <div style={{ backgroundColor: '#f0f2f5', minHeight: '100vh', padding: '40px 20px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             <div className="container" style={{ maxWidth: '1100px' }}>
@@ -128,9 +104,9 @@ const RequirementTracker = () => {
                     </div>
                 </div>
                 <div className="d-flex flex-wrap gap-3 mb-4">
-                    <StatCard icon={<Users size={22} />} label="Total Requirement Tracker" value="1,284" color="#6366f1" />
-                    <StatCard icon={<CheckCircle size={22} />} label="Active Now" value="840" color="#10b981" />
-                    <StatCard icon={<Clock size={22} />} label="Pending" value="12" color="#f59e0b" />
+                    <StatCard icon={<Users size={22} />} label="Total Requirements" value={totalRequirementTrackers} color="#6366f1" />
+                    <StatCard icon={<CheckCircle size={22} />} label="Active Now" value={activeRequirementTrackers} color="#10b981" />
+                    <StatCard icon={<Clock size={22} />} label="Pending" value={pendingRequirementTrackers} color="#f59e0b" />
                 </div>
 
                 {/* DATA CARD */}
@@ -623,16 +599,16 @@ const RequirementTracker = () => {
                                                             propertyType: "",
                                                             urgencyLevel: "",
                                                             purchaseTimeline: "",
-                                                            priorityAreas: "",
+                                                            preferredAreas: "",
                                                             occupation: "",
                                                             familySize: "",
                                                             loanRequired: "",
-                                                            preferredAreas: "",
                                                             financingType: "",
                                                             preferredFloor: "",
                                                             mustHaveAmenities: "",
                                                             dealBreakers: "",
-                                                            notesDescription: "",
+                                                            notes: "",
+                                                            requirementStatus: "Active",
                                                         });
 
                                                         setNewRequirementTrackerModal(false);
@@ -657,45 +633,52 @@ const RequirementTracker = () => {
                                     <th className="py-3">Client</th>
                                     <th className="ps-4 py-3">Budget (Min-Max)</th>
                                     <th className="py-3">Property Type</th>
-                                    <th className="py-3">Priority Areas</th>
+                                    <th className="py-3">Preferred Areas</th>
                                     <th className="py-3">Timeline</th>
                                     <th className="py-3">Status</th>
                                     <th className="py-3">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredRequirementTracker.map((requirementTracker) => (
-                                    <tr key={requirementTracker.id} style={{ borderBottom: '1px solid #eee' }}>
-
-                                        {/* Property */}
-                                        <td className="ps-4 py-3 fw-semibold">
-                                            {requirementTracker.clientType || "-"}
-                                        </td>
-
-                                        {/* Unit */}
-                                        <td className="py-3">
-                                            {requirementTracker.minBudget || "-"}
-                                        </td>
+                                {filteredRequirementTracker.map((req) => (
+                                    <tr key={req.id} style={{ borderBottom: '1px solid #eee' }}>
 
                                         {/* Client */}
-                                        <td className="py-3">
-                                            {requirementTracker.propertyType || "-"}
+                                        <td className="ps-4 py-3 fw-semibold">
+                                            {req.client || "-"}
                                         </td>
 
-                                        {/* Price */}
-                                        <td className="py-3 fw-bold text-success">
-                                            ₹ {requirementTracker.priorityAreas || "-"}
+                                        {/* Budget */}
+                                        <td className="py-3">
+                                            {req.minBudget && req.maxBudget 
+                                                ? `₹${req.minBudget} - ₹${req.maxBudget}` 
+                                                : req.minBudget || req.maxBudget || "-"}
+                                        </td>
+
+                                        {/* Property Type */}
+                                        <td className="py-3">
+                                            {req.propertyType || "-"}
+                                        </td>
+
+                                        {/* Preferred Areas */}
+                                        <td className="py-3 fw-bold">
+                                            {req.preferredAreas || "-"}
+                                        </td>
+
+                                        {/* Timeline */}
+                                        <td className="py-3">
+                                            {req.purchaseTimeline || "-"}
                                         </td>
 
                                         {/* Status */}
                                         <td className="py-3">
-                                            <span className={`badge ${requirementTracker.timeline === "Won"
-                                                ? "bg-success"
-                                                : requirementTracker.timeline === "Lost"
-                                                    ? "bg-danger"
+                                            <span className={`badge ${normalize(req.urgencyLevel) === "high" || normalize(req.requirementStatus) === "active"
+                                                ? "bg-danger"
+                                                : normalize(req.urgencyLevel) === "low" || normalize(req.requirementStatus) === "closed"
+                                                    ? "bg-secondary"
                                                     : "bg-warning text-dark"
                                                 }`}>
-                                                {requirementTracker.status}
+                                                {req.urgencyLevel || req.requirementStatus || "Active"}
                                             </span>
                                         </td>
 
@@ -742,11 +725,37 @@ const RequirementTracker = () => {
 
 // Reusable Stat Component
 const StatCard = ({ icon, label, value, color }) => (
-    <div className="d-flex align-items-center gap-3 px-3 py-1">
-        <div style={{ color }}>{icon}</div>
+    <div
+        className="d-flex align-items-center gap-3 px-4 py-3 rounded-4 transition-all"
+        style={{
+            background: 'white',
+            border: '1px solid rgba(255, 255, 255, 0.8)',
+            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.04)',
+            flex: '1',
+            minWidth: '200px',
+            borderLeft: `5px solid ${color}`
+        }}
+    >
+        {/* Icon Container with soft background */}
+        <div
+            className="d-flex align-items-center justify-content-center rounded-3"
+            style={{
+                width: '45px',
+                height: '45px',
+                backgroundColor: `${color}15`, // 15% opacity of the theme color
+                color: color
+            }}
+        >
+            {icon}
+        </div>
+
         <div>
-            <div className="text-muted" style={{ fontSize: '0.7rem', fontWeight: '700', textTransform: 'uppercase' }}>{label}</div>
-            <div className="fw-black" style={{ fontSize: '1.1rem', color: '#111827' }}>{value}</div>
+            <p className="text-muted fw-bold mb-0" style={{ fontSize: '0.75rem', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+                {label}
+            </p>
+            <h4 className="fw-black m-0" style={{ color: '#1f2937', fontSize: '1.4rem' }}>
+                {value}
+            </h4>
         </div>
     </div>
 );

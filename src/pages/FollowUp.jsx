@@ -64,6 +64,16 @@ function FollowUp() {
             </div>
         </div>
     );
+
+    const totalFollowUps = followUps.length;
+
+    const activeFollowUps = followUps.filter(
+        (f) => f.status?.toLowerCase() === "active"
+    ).length;
+
+    const pendingFollowUps = followUps.filter(
+        (f) => f.status?.toLowerCase() === "pending"
+    ).length;
     return (
         <div style={{ backgroundColor: '#f0f2f5', minHeight: '100vh', padding: '40px 20px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             <div className="container" style={{ maxWidth: '1100px' }}>
@@ -75,9 +85,9 @@ function FollowUp() {
                     </div>
                 </div>
                 <div className="d-flex flex-wrap gap-3 mb-4">
-                    <StatCard icon={<Users size={22} />} label="Total Follow Up" value="1,284" color="#6366f1" />
-                    <StatCard icon={<CheckCircle size={22} />} label="Active Now" value="840" color="#10b981" />
-                    <StatCard icon={<Clock size={22} />} label="Pending" value="12" color="#f59e0b" />
+                    <StatCard icon={<Users size={22} />} label="Total Follow Up" value={totalFollowUps} color="#6366f1" />
+                    <StatCard icon={<CheckCircle size={22} />} label="Active Now" value={activeFollowUps} color="#10b981" />
+                    <StatCard icon={<Clock size={22} />} label="Pending" value={pendingFollowUps} color="#f59e0b" />
                 </div>
 
                 {/* DATA CARD */}

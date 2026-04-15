@@ -93,6 +93,18 @@ const Property = () => {
 
         setNewPropertyModal(false);
     };
+
+    const normalize = (v) => (v || "").toLowerCase();
+
+    const totalProperties = properties.length;
+
+    const activeProperties = properties.filter(
+        (p) => normalize(p.status) === "active"
+    ).length;
+
+    const pendingProperties = properties.filter(
+        (p) => normalize(p.status) === "pending"
+    ).length;
     return (
         <div style={{ backgroundColor: '#f0f2f5', minHeight: '100vh', padding: '40px 20px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             <div className="container" style={{ maxWidth: '1100px' }}>
@@ -104,9 +116,9 @@ const Property = () => {
                     </div>
                 </div>
                 <div className="d-flex flex-wrap gap-3 mb-4">
-                    <StatCard icon={<Users size={22} />} label="Total Property" value={properties.length} color="#6366f1" />
-                    <StatCard icon={<CheckCircle size={22} />} label="Active Now" value="840" color="#10b981" />
-                    <StatCard icon={<Clock size={22} />} label="Pending" value="12" color="#f59e0b" />
+                    <StatCard icon={<Users size={22} />} label="Total Property" value={totalProperties} color="#6366f1" />
+                    <StatCard icon={<CheckCircle size={22} />} label="Active Now" value={activeProperties} color="#10b981" />
+                    <StatCard icon={<Clock size={22} />} label="Pending" value={pendingProperties} color="#f59e0b" />
                 </div>
 
                 {/* DATA CARD */}

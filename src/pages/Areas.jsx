@@ -125,6 +125,16 @@ const Area = () => {
       </div>
     </div>
   );
+
+  const totalAreas = Area.length;
+
+  const activeAreas = Area.filter(
+    (a) => a.status?.toLowerCase() === "active"
+  ).length;
+
+  const pendingAreas = Area.filter(
+    (a) => a.status?.toLowerCase() === "pending"
+  ).length;
   return (
     <div style={{ backgroundColor: '#f0f2f5', minHeight: '100vh', padding: '40px 20px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
       <div className="container" style={{ maxWidth: '1100px' }}>
@@ -136,9 +146,9 @@ const Area = () => {
           </div>
         </div>
         <div className="d-flex flex-wrap gap-3 mb-4">
-          <StatCard icon={<Users size={22} />} label="Total Area" value="1,284" color="#6366f1" />
-          <StatCard icon={<CheckCircle size={22} />} label="Active Now" value="840" color="#10b981" />
-          <StatCard icon={<Clock size={22} />} label="Pending" value="12" color="#f59e0b" />
+          <StatCard icon={<Users size={22} />} label="Total Area" value={totalAreas} color="#6366f1" />
+          <StatCard icon={<CheckCircle size={22} />} label="Active Now" value={activeAreas} color="#10b981" />
+          <StatCard icon={<Clock size={22} />} label="Pending" value={pendingAreas} color="#f59e0b" />
         </div>
 
         {/* DATA CARD */}

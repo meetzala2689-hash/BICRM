@@ -151,6 +151,22 @@ function OwnerDetails() {
         setNewOwnerDetailsModal(false);
     };
 
+    const normalize = (v) => (v || "").toLowerCase();
+
+    const totalOwners = ownerDetails.length;
+
+    const activeOwners = ownerDetails.filter(
+        (o) => normalize(o.ownerDetailsStatus) === "active"
+    ).length;
+
+    const pendingOwners = ownerDetails.filter(
+        (o) => normalize(o.ownerDetailsStatus) === "inactive"
+    ).length;
+
+    const onHoldOwners = ownerDetails.filter(
+        (o) => normalize(o.ownerDetailsStatus) === "on hold"
+    ).length;
+
     return (
         <div style={{ backgroundColor: '#f0f2f5', minHeight: '100vh', padding: '40px 20px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             <div className="container" style={{ maxWidth: '1100px' }}>
@@ -164,9 +180,10 @@ function OwnerDetails() {
 
                 {/* STAT CARDS */}
                 <div className="d-flex flex-wrap gap-3 mb-4">
-                    <StatCard icon={<Users size={22} />} label="Total Owner Details" value="1,284" color="#6366f1" />
-                    <StatCard icon={<CheckCircle size={22} />} label="Active Now" value="840" color="#10b981" />
-                    <StatCard icon={<Clock size={22} />} label="Pending" value="12" color="#f59e0b" />
+                    <StatCard icon={<Users size={22} />} label="Total Owner Details" value={totalOwners} color="#6366f1" />
+                    <StatCard icon={<CheckCircle size={22} />} label="Active Now" value={activeOwners} color="#10b981" />
+                    <StatCard icon={<Clock size={22} />} label="Pending" value={pendingOwners} color="#f59e0b" />
+                    <StatCard icon={<Clock size={22} />} label="On Hold" value={onHoldOwners} color="#a584c4ff" />
                 </div>
 
                 {/* DATA CARD */}

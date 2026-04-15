@@ -54,6 +54,7 @@ function ProjectModule() {
   const location = useLocation();
   const navigate = useNavigate();
   const projectToEdit = location.state?.project;
+  const orgId = location.state?.orgId || localStorage.getItem("selectedOrgId");
   const [errors, setErrors] = useState({});
 
   const [formData, setFormData] = useState({
@@ -69,6 +70,7 @@ function ProjectModule() {
     launchDate: projectToEdit?.launchDate || "",
     possessionDate: projectToEdit?.possessionDate || "",
     notes: projectToEdit?.notes || "",
+    orgId: projectToEdit?.orgId || orgId, // Preserve or set orgId
   });
 
   const handleChange = (e) => {
@@ -122,14 +124,16 @@ function ProjectModule() {
       (p) => p.projectCode === formData.projectCode,
     );
 
+    const projectData = { ...formData, orgId: formData.orgId || orgId };
+
     if (projectIndex >= 0) {
-      savedProjects[projectIndex] = formData;
+      savedProjects[projectIndex] = projectData;
     } else {
-      savedProjects.push(formData);
+      savedProjects.push(projectData);
     }
 
     localStorage.setItem("projects", JSON.stringify(savedProjects));
-    navigate("/project");
+    navigate("/project", { state: { orgId } });
   };
 
   const handleCancel = () => {

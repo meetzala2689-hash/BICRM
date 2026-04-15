@@ -407,7 +407,13 @@ function Organization() {
                 {/* Action Buttons */}
                 <div className="d-flex gap-2 mt-auto">
                   <button
-                    onClick={() => navigate("/project")}
+                    onClick={() => {
+                      localStorage.setItem("selectedOrgId", user.id);
+                      localStorage.setItem("selectedOrgName", user.organization);
+                      navigate("/project", {
+                        state: { orgId: user.id, orgName: user.organization }
+                      });
+                    }}
                     className="btn w-50 d-flex align-items-center justify-content-center gap-2"
                     style={{
                       borderRadius: "12px",

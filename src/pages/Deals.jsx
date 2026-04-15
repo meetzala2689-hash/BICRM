@@ -117,6 +117,16 @@ function Deals() {
             </div>
         </div>
     );
+
+    const totalDeals = deals.length;
+
+    const wonDeals = deals.filter(
+        (d) => d.dealStatus?.toLowerCase() === "won"
+    ).length;
+
+    const lostDeals = deals.filter(
+        (d) => d.dealStatus?.toLowerCase() === "lost"
+    ).length;
     return (
         <div style={{ backgroundColor: '#f0f2f5', minHeight: '100vh', padding: '40px 20px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             <div className="container" style={{ maxWidth: '1100px' }}>
@@ -128,9 +138,26 @@ function Deals() {
                     </div>
                 </div>
                 <div className="d-flex flex-wrap gap-3 mb-4">
-                    <StatCard icon={<Users size={22} />} label="Total Deals" value="1,284" color="#6366f1" />
-                    <StatCard icon={<CheckCircle size={22} />} label="Active Now" value="840" color="#10b981" />
-                    <StatCard icon={<Clock size={22} />} label="Pending" value="12" color="#f59e0b" />
+                    <StatCard
+                        icon={<Users size={22} />}
+                        label="Total Deals"
+                        value={totalDeals}
+                        color="#6366f1"
+                    />
+
+                    <StatCard
+                        icon={<CheckCircle size={22} />}
+                        label="Won"
+                        value={wonDeals}
+                        color="#10b981"
+                    />
+
+                    <StatCard
+                        icon={<Clock size={22} />}
+                        label="Lost"
+                        value={lostDeals}
+                        color="#f59e0b"
+                    />
                 </div>
 
                 {/* DATA CARD */}
@@ -487,9 +514,9 @@ function Deals() {
                                                                 value={newDeals.dealStatus}
                                                                 onChange={(e) => setNewDeals({ ...newDeals, dealStatus: e.target.value })}
                                                             >
-                                                                <option>Open</option>
-                                                                <option>Won</option>
-                                                                <option>Lost</option>
+                                                                <option value="open">Open</option>
+                                                                <option value="won">Won</option>
+                                                                <option value="lost">Lost</option>
                                                             </select>
                                                         </div>
 

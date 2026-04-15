@@ -3,8 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 function Project({ projects }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [activeMenu, setActiveMenu] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+
+  const orgId = location.state?.orgId || localStorage.getItem("selectedOrgId");
+  const orgName = location.state?.orgName || localStorage.getItem("selectedOrgName");
 
   const [projectList, setProjectList] = useState(() => {
     const savedProjects = localStorage.getItem("projects");
@@ -15,11 +19,6 @@ function Project({ projects }) {
     localStorage.setItem("projects", JSON.stringify(projectList));
   }, [projectList]);
 
-  // useEffect(() => {
-  //   const savedProjects = JSON.parse(localStorage.getItem("projects")) || [];
-  //   setProjectList(savedProjects);
-  // }, []);
-
   const handleMenuClick = (index) => {
     setActiveMenu(activeMenu === index ? null : index); // toggle menu
   };
@@ -29,7 +28,7 @@ function Project({ projects }) {
       console.log("View", project);
     } else if (action === "edit") {
       // Navigate to ProjectModule and pass project data
-      navigate("/ProjectModule", { state: { project } });
+      navigate("/ProjectModule", { state: { project, orgId } });
     } else if (action === "delete") {
       const updatedList = projectList.filter(
         (p) => p.projectCode !== project.projectCode,
@@ -40,14 +39,19 @@ function Project({ projects }) {
   };
 
   const filteredProjects = projectList.filter(
-    (project) =>
-      project.projectName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      project.projectCode.toLowerCase().includes(searchTerm.toLowerCase()),
+    (project) => {
+      const matchesSearch = 
+        project.projectName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        project.projectCode.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesOrg = !orgId || String(project.orgId) === String(orgId);
+      
+      return matchesSearch && matchesOrg;
+    }
   );
 
   return (
     <div className="m-4">
-
       {/* Header */}
       <div className="box d-flex align-items-center gap-5">
         <h1 className="me-5">Welcome to your Project</h1>
@@ -55,13 +59,12 @@ function Project({ projects }) {
         <div className="box d-flex align-items-center gap-3 shadow-sm p-2 pe-4 ps-4 rounded-5 justify-content-end ms-5">
           <p className="mb-0 d-flex align-items-center">
             <i className="bi bi-building me-2 fs-5"></i>
-            Pinnacle Solutions 221
+            {orgName || "Select Organization"}
           </p>
 
           <button
-            onClick={() => navigate("/ProjectModule")}
+            onClick={() => navigate("/ProjectModule", { state: { orgId } })}
             className="ps-3 pe-3 border-0 rounded fw-bold d-flex align-items-center gap-2 text-primary bg-light"
-
           >
             <i className="bi bi-plus-lg text-primary"></i>
             New Project
@@ -76,7 +79,11 @@ function Project({ projects }) {
               Common Dashboard
             </span>
           </button>
-          <p className="mb-0 d-flex align-items-center">
+          <p 
+            className="mb-0 d-flex align-items-center" 
+            style={{ cursor: "pointer" }}
+            onClick={() => navigate("/organization")}
+          >
             <i className="bi bi-arrow-left-right me-2 fs-5"></i>
             Change
           </p>

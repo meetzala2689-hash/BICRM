@@ -132,6 +132,22 @@ const Units = () => {
         </div>
     );
 
+
+    const normalize = (v) => (v || "").toLowerCase();
+
+    const totalUnits = units.length;
+
+    const openUnits = units.filter(
+        (u) => normalize(u.unitStatus) === "open"
+    ).length;
+
+    const wonUnits = units.filter(
+        (u) => normalize(u.unitStatus) === "won"
+    ).length;
+
+    const lostUnits = units.filter(
+        (u) => normalize(u.unitStatus) === "lost"
+    ).length;
     return (
         <div style={{ backgroundColor: '#f0f2f5', minHeight: '100vh', padding: '40px 20px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             <div className="container" style={{ maxWidth: '1100px' }}>
@@ -143,9 +159,10 @@ const Units = () => {
                     </div>
                 </div>
                 <div className="d-flex flex-wrap gap-3 mb-4">
-                    <StatCard icon={<Users size={22} />} label="Total Units" value="1,284" color="#6366f1" />
-                    <StatCard icon={<CheckCircle size={22} />} label="Active Now" value="840" color="#10b981" />
-                    <StatCard icon={<Clock size={22} />} label="Pending" value="12" color="#f59e0b" />
+                    <StatCard icon={<Users size={22} />} label="Total Units" value={totalUnits} color="#6366f1" />
+                    <StatCard icon={<CheckCircle size={22} />} label="Open Units" value={openUnits} color="#10b981" />
+                    <StatCard icon={<Clock size={22} />} label="Won Units" value={wonUnits} color="#f59e0b" />
+                    <StatCard icon={<Clock size={22} />} label="Lost Units" value={lostUnits} color="#f59e0b" />
                 </div>
 
                 {/* DATA CARD */}
