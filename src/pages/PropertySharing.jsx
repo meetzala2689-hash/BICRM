@@ -122,6 +122,20 @@ const PropertySharing = () => {
         </div>
     );
 
+    const totalPropertySharing = propertySharing.length;
+
+    const activePropertySharing = propertySharing.filter(
+        (a) => a.propertyStatus?.toLowerCase() === "active"
+    ).length;
+
+    const pendingPropertySharing = propertySharing.filter(
+        (a) => a.propertyStatus?.toLowerCase() === "pending"
+    ).length;
+
+    const closedPropertySharing = propertySharing.filter(
+        (a) => a.propertyStatus?.toLowerCase() === "closed"
+    ).length;
+
     return (
         <div style={{ backgroundColor: '#f0f2f5', minHeight: '100vh', padding: '40px 20px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             <div className="container" style={{ maxWidth: '1100px' }}>
@@ -133,9 +147,10 @@ const PropertySharing = () => {
                     </div>
                 </div>
                 <div className="d-flex flex-wrap gap-3 mb-4">
-                    <StatCard icon={<Users size={22} />} label="Total Property Sharing" value="1,284" color="#6366f1" />
-                    <StatCard icon={<CheckCircle size={22} />} label="Active Now" value="840" color="#10b981" />
-                    <StatCard icon={<Clock size={22} />} label="Pending" value="12" color="#f59e0b" />
+                    <StatCard icon={<Users size={22} />} label="Total Property Sharing" value={totalPropertySharing} color="#6366f1" />
+                    <StatCard icon={<CheckCircle size={22} />} label="Active Now" value={activePropertySharing} color="#10b981" />
+                    <StatCard icon={<Clock size={22} />} label="Pending" value={pendingPropertySharing} color="#f59e0b" />
+                    <StatCard icon={<Clock size={22} />} label="Closed" value={closedPropertySharing} color="#f59e0b" />
                 </div>
 
                 {/* DATA CARD */}

@@ -89,6 +89,7 @@ const Area = () => {
 
     return matchesSearch && matchesStatus;
   });
+
   const StatCard = ({ icon, label, value, color }) => (
     <div
       className="d-flex align-items-center gap-3 px-4 py-3 rounded-4 transition-all"
@@ -99,7 +100,6 @@ const Area = () => {
         flex: '1',
         minWidth: '200px',
         borderLeft: `5px solid ${color}`
-
       }}
     >
       {/* Icon Container with soft background */}
@@ -127,14 +127,13 @@ const Area = () => {
   );
 
   const totalAreas = Area.length;
-
   const activeAreas = Area.filter(
     (a) => a.status?.toLowerCase() === "active"
   ).length;
-
   const pendingAreas = Area.filter(
     (a) => a.status?.toLowerCase() === "pending"
   ).length;
+
   return (
     <div style={{ backgroundColor: '#f0f2f5', minHeight: '100vh', padding: '40px 20px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
       <div className="container" style={{ maxWidth: '1100px' }}>

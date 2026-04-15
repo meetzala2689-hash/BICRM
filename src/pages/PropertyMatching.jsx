@@ -175,7 +175,19 @@ const PropertyMatching = () => {
             </div>
         </div>
     );
+    const totalPropertyMatching = propertyMatching.length;
 
+    const openPropertyMatching = propertyMatching.filter(
+        (a) => a.dealStatus?.toLowerCase() === "open"
+    ).length;
+
+    const closedPropertyMatching = propertyMatching.filter(
+        (a) => a.dealStatus?.toLowerCase() === "close"
+    ).length;
+
+    const matchedPropertyMatching = propertyMatching.filter(
+        (a) => a.dealStatus?.toLowerCase() === "matched"
+    ).length;
     return (
         <div style={{ backgroundColor: '#f0f2f5', minHeight: '100vh', padding: '20px 20px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             <div className="container" style={{ maxWidth: '1100px' }}>
@@ -187,9 +199,10 @@ const PropertyMatching = () => {
                     </div>
                 </div>
                 <div className="d-flex flex-wrap gap-3 mb-3">
-                    <StatCard icon={<Users size={22} />} label="Total Property Matching" value="1,284" color="#6366f1" />
-                    <StatCard icon={<CheckCircle size={22} />} label="Active Now" value="840" color="#10b981" />
-                    <StatCard icon={<Clock size={22} />} label="Pending" value="12" color="#f59e0b" />
+                    <StatCard icon={<Users size={22} />} label="Total Property Matching" value={totalPropertyMatching} color="#6366f1" />
+                    <StatCard icon={<CheckCircle size={22} />} label="Open" value={openPropertyMatching} color="#10b981" />
+                    <StatCard icon={<Clock size={22} />} label="Closed" value={closedPropertyMatching} color="#f59e0b" />
+                    <StatCard icon={<CheckCircle size={22} />} label="Matched" value={matchedPropertyMatching} color="#3b82f6" />
                 </div>
 
                 {/* DATA CARD */}
