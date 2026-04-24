@@ -148,6 +148,7 @@ const Units = () => {
     const lostUnits = units.filter(
         (u) => normalize(u.unitStatus) === "lost"
     ).length;
+
     return (
         <div style={{ backgroundColor: '#f0f2f5', minHeight: '100vh', padding: '40px 20px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             <div className="container" style={{ maxWidth: '1100px' }}>

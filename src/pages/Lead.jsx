@@ -1,337 +1,730 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { Line, Bar } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler,
-} from "chart.js";
+import React, { useEffect, useState } from 'react';
+import { Search, UserPlus, Filter, Users, CheckCircle, Clock, } from 'lucide-react';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler,
-);
-
-function Lead() {
-  const [lineData, setLineData] = useState({
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-    datasets: [
-      {
-        label: "Leads",
-        data: [12, 19, 1, 21, 17, 25],
-        borderColor: "#6366f1",
-        backgroundColor: "rgba(99, 102, 241, 0.1)",
-        fill: true,
-        tension: 0.4,
-        pointBackgroundColor: "#6366f1",
-        pointBorderColor: "#fff",
-        pointBorderWidth: 2,
-        pointRadius: 4,
-      },
-      {
-        label: "Revenue",
-        data: [5, 9, 6, 12, 8, 15],
-        borderColor: "#f43f5e",
-        backgroundColor: "rgba(244, 63, 94, 0.1)",
-        fill: true,
-        tension: 0.4,
-        pointBackgroundColor: "#f43f5e",
-        pointBorderColor: "#fff",
-        pointBorderWidth: 2,
-        pointRadius: 4,
-      },
-    ],
+function Leads() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [filterVisible, setFilterVisible] = useState(() => {
+    return localStorage.getItem("filterVisible") === "true";
+  });
+  const [filterExpanded, setFilterExpanded] = useState(() => {
+    return localStorage.getItem("filterExpanded") === "true";
+  });
+  const [filters, setFilters] = useState(() => {
+    const saved = localStorage.getItem("leadFilters");
+    return saved ? JSON.parse(saved) : [];
+  });
+  useEffect(() => {
+    localStorage.setItem("filterVisible", JSON.stringify(filterVisible));
+    localStorage.setItem("filterExpanded", JSON.stringify(filterExpanded));
+    localStorage.setItem("leadFilters", JSON.stringify(filters));
+  }, [filterVisible, filterExpanded, filters]);
+  // <-- FIX
+  // Lead STATE
+  const [Lead, setLead] = useState(() => {
+    const saved = localStorage.getItem("Lead");
+    return saved ? JSON.parse(saved) : [];
   });
 
-  const [dateTime, setDateTime] = useState(new Date());
+  // const [newLeadModal, setNewLeadModal] = useState(false);
+  const [newLeadModal, setNewLeadModal] = useState(() => {
+    return localStorage.getItem("newLeadModal") === "true";
+  });
+
+  // NEW LEAD STATE   
+  const [newLead, setNewLead] = useState(() => {
+    const saved = localStorage.getItem("newLeadDraft");
+    return saved
+      ? JSON.parse(saved)
+      : {
+        name: "",
+        email: "",
+        phone: "",
+
+        clientType: "",
+        property: "",
+        unit: "",
+
+        quotedPrice: "",
+        negotiatedPrice: "",
+        discount: "",
+        Leadtatus: "",
+        paymentPlan: "",
+        consultant: "",
+
+        notes: "",
+
+        location: "India",
+        category: "General",
+        status: "Active"
+      };
+  });
+
+  // AUTO SAVE DRAFT
+  useEffect(() => {
+    localStorage.setItem("newLeadDraft", JSON.stringify(newLead));
+  }, [newLead]);
 
   useEffect(() => {
-    const timer = setInterval(() => setDateTime(new Date()), 60000);
-    return () => clearInterval(timer);
-  }, []);
+    localStorage.setItem("newLeadModal", newLeadModal);
+  }, [newLeadModal]);
 
-  const barData = useMemo(
-    () => ({
-      labels: ["Completed", "Pending", "In Progress", "Overdue"],
-      datasets: [
-        {
-          label: "Tasks",
-          data: [8, 5, 3, 9],
-          backgroundColor: ["#10b981", "#f59e0b", "#6366f1", "#f43f5e"],
-          borderRadius: 8,
-          barThickness: 25,
-        },
-      ],
-    }),
-    [],
+  const filteredLead = Lead.filter(lead => {
+    const matchesSearch =
+      lead.property?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      lead.clientType?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      lead.consultant?.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesStatus =
+      statusFilter === '' || lead.Leadtatus === statusFilter;
+
+    return matchesSearch && matchesStatus;
+  });
+
+  const StatCard = ({ icon, label, value, color }) => (
+    <div
+      className="d-flex align-items-center gap-3 px-4 py-3 rounded-4 transition-all"
+      style={{
+        background: 'white',
+        border: '1px solid rgba(255, 255, 255, 0.8)',
+        boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.04)',
+        flex: '1',
+        minWidth: '200px',
+        borderLeft: `5px solid ${color}`
+      }}
+    >
+      {/* Icon Container with soft background */}
+      <div
+        className="d-flex align-items-center justify-content-center rounded-3"
+        style={{
+          width: '45px',
+          height: '45px',
+          backgroundColor: `${color}15`, // 15% opacity of the theme color
+          color: color
+        }}
+      >
+        {icon}
+      </div>
+
+      <div>
+        <p className="text-muted fw-bold mb-0" style={{ fontSize: '0.75rem', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+          {label}
+        </p>
+        <h4 className="fw-black m-0" style={{ color: '#1f2937', fontSize: '1.4rem' }}>
+          {value}
+        </h4>
+      </div>
+    </div>
   );
 
-  const chartOptions = useMemo(
-    () => ({
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: "#1e293b",
-          padding: 12,
-          titleFont: { size: 14 },
-          bodyFont: { size: 13 },
-          cornerRadius: 8,
-        },
-      },
-      scales: {
-        y: {
-          grid: { color: "#f1f5f9", drawBorder: false },
-          ticks: { color: "#94a3b8" },
-        },
-        x: { grid: { display: false }, ticks: { color: "#94a3b8" } },
-      },
-    }),
-    [],
-  );
+  const totalLead = Lead.length;
 
-  const projects = useMemo(
-    () => [
-      {
-        name: "Project Alpha",
-        status: "Ongoing",
-        start: "2026-01-01",
-        end: "2026-06-01",
-        owner: "Jane Doe",
-        priority: "High",
-        progress: 60,
-      },
-      {
-        name: "Project Beta",
-        status: "Completed",
-        start: "2025-05-01",
-        end: "2025-12-15",
-        owner: "John Smith",
-        priority: "Medium",
-        progress: 100,
-      },
-      {
-        name: "Project Gamma",
-        status: "Pending",
-        start: "2026-03-10",
-        end: "2026-09-30",
-        owner: "Emily Davis",
-        priority: "Critical",
-        progress: 10,
-      },
-      {
-        name: "Project Delta",
-        status: "Ongoing",
-        start: "2026-02-15",
-        end: "2026-08-20",
-        owner: "Michael Brown",
-        priority: "High",
-        progress: 45,
-      },
-      {
-        name: "Project Epsilon",
-        status: "Completed",
-        start: "2025-03-01",
-        end: "2025-10-10",
-        owner: "Sarah Wilson",
-        priority: "Low",
-        progress: 100,
-      },
-      {
-        name: "Project Zeta",
-        status: "Ongoing",
-        start: "2026-04-05",
-        end: "2026-12-01",
-        owner: "David Lee",
-        priority: "Medium",
-        progress: 30,
-      },
-    ],
-    [],
-  );
+  const wonLead = Lead.filter(
+    (d) => d.Leadtatus?.toLowerCase() === "won"
+  ).length;
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
-  const totalPages = Math.ceil(projects.length / itemsPerPage);
-  const currentProjects = useMemo(() => {
-    const start = (currentPage - 1) * itemsPerPage;
-    return projects.slice(start, start + itemsPerPage);
-  }, [currentPage, projects]);
-
+  const lostLead = Lead.filter(
+    (d) => d.Leadtatus?.toLowerCase() === "lost"
+  ).length;
   return (
-    <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-      {/* Header Section */}
-      <header className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-3">
-        <div>
-          <h1 className="fw-bold text-slate-900 mb-1 h3">Lead Intelligence</h1>
-          <p className="text-muted small mb-0">
-            Operational overview for{" "}
-            <span className="text-indigo-600 fw-semibold">KiritTech Studio</span>
-          </p>
-        </div>
-        <div className="d-flex align-items-center gap-3">
-          <div className="glass-card px-3 py-2 rounded-3 border shadow-sm bg-white">
-            <span className="small fw-bold text-slate-600">
-              <i className="bi bi-clock-history me-2 text-indigo-500"></i>
-              {dateTime.toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
-            </span>
+    <div style={{ backgroundColor: '#f0f2f5', minHeight: '100vh', padding: '40px 20px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+      <div className="container" style={{ maxWidth: '1100px' }}>
+        {/* TOP SECTION */}
+        <div className="d-flex flex-column flex-md-row justify-content-between mb-5 gap-4">
+          <div>
+            <span className="badge bg-primary bg-opacity-10 text-primary mb-2 px-3 py-2 rounded-pill fw-bold">CRM Dashboard</span>
+            <h1 className="fw-black m-0" style={{ color: '#111827', fontSize: '2.5rem', letterSpacing: '-1px' }}>Lead</h1>
           </div>
-          <button className="btn btn-dark rounded-3 px-4 py-2 fw-semibold shadow-sm hover-lift">
-            <i className="bi bi-plus-lg me-2"></i>New Export
-          </button>
         </div>
-      </header>
+        <div className="d-flex flex-wrap gap-3 mb-4">
+          <StatCard
+            icon={<Users size={22} />}
+            label="Total Lead"
+            value={totalLead}
+            color="#6366f1"
+          />
 
-      {/* Stat Cards */}
-      <div className="row g-4 mb-5">
-        {[
-          { label: "Total Leads", val: "42", trend: "+12%", color: "indigo", icon: "bi-rocket-takeoff" },
-          { label: "Active Tasks", val: "05", trend: "Steady", color: "amber", icon: "bi-list-check" },
-          { label: "New Signups", val: "12", trend: "+4%", color: "emerald", icon: "bi-person-badge" },
-        ].map((s, i) => (
-          <div className="col-md-4" key={i}>
-            <div className="card border-0 shadow-sm rounded-4 hover-lift p-2 overflow-hidden">
-              <div className="card-body d-flex align-items-center" style={{ borderLeft: `5px solid ${s.color === "indigo" ? "#6366f1" : s.color === "amber" ? "#f59e0b" : "#10b981"}` }}>
-                <div className={`bg-${s.color === "indigo" ? "primary" : s.color === "amber" ? "warning" : "success"} bg-opacity-10 p-3 rounded-4 me-3`}>
-                  <i className={`bi ${s.icon} fs-4 text-${s.color === "indigo" ? "primary" : s.color === "amber" ? "warning" : "success"}`}></i>
+          <StatCard
+            icon={<CheckCircle size={22} />}
+            label="Won"
+            value={wonLead}
+            color="#10b981"
+          />
+
+          <StatCard
+            icon={<Clock size={22} />}
+            label="Lost"
+            value={lostLead}
+            color="#f59e0b"
+          />
+        </div>
+
+        {/* DATA CARD */}
+        <div className="card border-0 shadow-lg rounded-5 bg-white overflow-hidden">
+          {/* ACTION BAR */}
+          <div className="p-4 border-bottom bg-white">
+            <div className="row align-items-center g-3">
+              <div className="col-md-7">
+                <div className="position-relative">
+                  <Search className="position-absolute top-50 start-0 translate-middle-y ms-3 text-muted" size={18} />
+                  <input
+                    type="text"
+                    className="form-control ps-5 py-3 border-0 bg-light rounded-4 shadow-none"
+                    placeholder="Search by name, email, or status..."
+                    style={{ fontSize: '0.95rem' }}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
                 </div>
-                <div>
-                  <span className="text-muted small fw-bold text-uppercase tracking-tighter" style={{ fontSize: "0.65rem" }}>{s.label}</span>
-                  <div className="d-flex align-items-center gap-2">
-                    <h2 className="fw-bold mb-0">{s.val}</h2>
-                    <span className="badge bg-light text-dark border-0 small fw-medium" style={{ fontSize: "0.7rem" }}>{s.trend}</span>
+              </div>
+
+              <div className="col-md-5 d-flex gap-2 justify-content-md-end justify-content-between">
+                <div className="position-relative">
+                  <button
+                    className="btn btn-light border-0 py-3 px-4 rounded-4 fw-bold text-secondary d-flex align-items-center gap-2"
+                    onClick={() => {
+                      if (!filterVisible) {
+                        setFilterVisible(true);
+                        setFilterExpanded(false);
+                      } else {
+                        setFilterExpanded(!filterExpanded);
+                      }
+                    }}
+                  >
+                    <Filter size={18} /> Filter
+                  </button>
+                  {filterVisible && (
+                    <div className="position-absolute mt-1 p-3 bg-white shadow rounded-4" style={{ zIndex: 10, minWidth: '220px' }}>
+                      {/* Small module */}
+                      {!filterExpanded && (
+                        <div className="d-flex justify-content-between align-items-center">
+                          <span
+                            className="fw-bold"
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => setFilterExpanded(true)}
+                          >
+                            Filter
+                          </span>
+                          <div>||</div>
+                          <button
+                            className="btn border-0 fw-bold"
+                            onClick={() => {
+                              setStatusFilter('');
+                              setSearchTerm(''); // 🔥 IMPORTANT (you forgot this)
+                              setFilterExpanded(false);
+                              setFilterVisible(false);
+                            }}
+                          >
+                            Clear
+                          </button>
+                        </div>
+                      )}
+
+                      {filterExpanded && (
+                        <div
+                          className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
+                          style={{
+                            backgroundColor: 'rgba(15, 23, 42, 0.4)', // Modern slate-tinted overlay
+                            backdropFilter: 'blur(8px)',
+                            zIndex: 1050,
+                            transition: 'all 0.3s ease'
+                          }}
+                        >
+                          <div
+                            className="bg-white shadow-lg border-0"
+                            style={{
+                              width: '650px',
+                              maxWidth: '92%',
+                              borderRadius: '24px',
+                              overflow: 'hidden'
+                            }}
+                          >
+                            {/* Header */}
+                            <div className="px-4 py-3 d-flex justify-content-between align-items-center border-bottom bg-light">
+                              <h5 className="m-0 fw-bold" style={{ color: '#1e293b', letterSpacing: '-0.5px' }}>
+                                <i className="bi bi-filter-right me-2 text-primary"></i> Filter Lead
+                              </h5>
+                              <button
+                                className="btn-close shadow-none"
+                                style={{ fontSize: '0.8rem' }}
+                                onClick={() => {
+                                  setStatusFilter('');
+                                  setFilters([]);
+                                  setFilterExpanded(false);
+                                  setFilterVisible(false);
+                                }}
+                              />
+                            </div>
+
+                            <div className="p-4">
+                              {/* Field Selector Section */}
+                              <div className="mb-4">
+                                <label className="form-label small fw-bold text-uppercase text-muted mb-2">Add New Filter</label>
+                                <select
+                                  className="form-select border-0 shadow-sm py-2 px-3"
+                                  style={{ backgroundColor: '#f8fafc', borderRadius: '12px' }}
+                                  value={statusFilter}
+                                  onChange={(e) => {
+                                    const field = e.target.value;
+                                    if (!field) return;
+                                    setFilters([
+                                      ...filters,
+                                      { field, operator: "equals", value: "" }
+                                    ]);
+                                  }}
+                                >
+                                  <option value="">Choose a field...</option>
+                                  <option value="Status">Status</option>
+                                  <option value="Negotiated Price">Negotiated Price</option>
+                                  <option value="Discount %">Discount %</option>
+                                  <option value="Payment Plan">Payment Plan</option>
+                                </select>
+                              </div>
+
+                              {/* Dynamic Filter Rows */}
+                              <div className="overflow-auto" style={{ maxHeight: '300px', paddingRight: '4px' }}>
+                                {filters.map((f, i) => (
+                                  <div
+                                    key={i}
+                                    className="p-3 mb-3 animate-in"
+                                    style={{
+                                      backgroundColor: '#ffffff',
+                                      border: '1px solid #e2e8f0',
+                                      borderRadius: '16px',
+                                      boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+                                    }}
+                                  >
+                                    <div className="d-flex align-items-center justify-content-between mb-2">
+                                      <span className="badge bg-primary-subtle text-primary rounded-pill px-3 py-2">
+                                        {f.field}
+                                      </span>
+                                      <button
+                                        className="btn btn-sm text-danger border-0 p-0"
+                                        onClick={() => setFilters(filters.filter((_, idx) => idx !== i))}
+                                      >
+                                        <i className="bi bi-trash3-fill"></i>
+                                      </button>
+                                    </div>
+
+                                    <div className="d-flex gap-2 align-items-center">
+                                      <select
+                                        className="form-select form-select-sm border-0 shadow-sm w-auto"
+                                        style={{ backgroundColor: '#f1f5f9', borderRadius: '8px', fontWeight: '500' }}
+                                        value={f.operator} // Keeping logic: used your filters variable structure
+                                        onChange={(e) => {
+                                          const newFilters = [...filters];
+                                          newFilters[i].operator = e.target.value;
+                                          setFilters(newFilters);
+                                        }}
+                                      >
+                                        <option value="equals">is equal to</option>
+                                        <option value="contains">contains</option>
+                                      </select>
+
+                                      <input
+                                        type="text"
+                                        className="form-control form-control-sm border-0 shadow-sm"
+                                        style={{ backgroundColor: '#f1f5f9', borderRadius: '8px' }}
+                                        placeholder="Type value..."
+                                        value={f.value}
+                                        onChange={(e) => {
+                                          const newFilters = [...filters];
+                                          newFilters[i].value = e.target.value;
+                                          setFilters(newFilters);
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
+                                ))}
+
+                                {filters.length === 0 && (
+                                  <div className="text-center py-4 border border-dashed rounded-4">
+                                    <p className="text-muted small mb-0">Select a field above to start filtering Lead.</p>
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Footer Actions */}
+                              <div className="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                                <button
+                                  className="btn btn-link text-muted text-decoration-none fw-semibold p-0"
+                                  onClick={() => {
+                                    setStatusFilter('');
+                                    setFilters([]);
+                                    setFilterExpanded(false);
+                                    setFilterVisible(false);
+                                  }}
+                                >
+                                  Reset All
+                                </button>
+
+                                <div className="d-flex gap-2">
+                                  <button
+                                    className="btn px-4 border-0 text-secondary fw-bold"
+                                    style={{ background: '#f1f5f9', borderRadius: '12px' }}
+                                    onClick={() => setFilterExpanded(false) || setFilterVisible(false)}
+                                  >
+                                    Cancel
+                                  </button>
+                                  <button
+                                    className="btn btn-primary px-4 fw-bold shadow-sm"
+                                    style={{ borderRadius: '12px' }}
+                                    onClick={() => {
+                                      setFilterExpanded(false);
+                                      setFilterVisible(false);
+                                    }}
+                                  >
+                                    Apply Filters
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+                {/* <button
+                                    className="btn btn-dark py-3 px-4 rounded-4 fw-bold d-flex align-items-center gap-2 shadow-sm"
+                                    onClick={() => setNewLeadModal(true)} // open modal
+                                >
+                                    <UserPlus size={18} /> New Lead
+                                </button> */}
+                <button
+                  className="btn btn-dark py-3 px-4 rounded-4 fw-bold d-flex justify-content-center align-items-center gap-2 shadow-sm"
+                  onClick={() => {
+                    setNewLeadModal(true);
+                    localStorage.setItem("newLeadModal", "true");
+                  }}
+                >
+                  <UserPlus size={18} />
+
+                  <span className="d-none d-sm-inline">New Leads</span>
+
+                  <span className="d-inline d-sm-none">+</span>
+                </button>
+
+                {/* New Lead Modal */}
+                {newLeadModal && (
+                  <div
+                    className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
+                    style={{
+                      background: 'rgba(255,255,255,0.1)',
+                      backdropFilter: 'blur(15px)',
+                      zIndex: 2000
+                    }}
+                  >
+                    <div
+                      className="bg-white shadow-lg"
+                      style={{
+                        width: '100%',
+                        maxWidth: '100%',
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column'
+                      }}
+                    >
+
+                      {/* HEADER */}
+                      <div className="p-4 border-bottom d-flex justify-content-between align-items-center">
+                        <div>
+                          <h4 className="m-0 fw-black">Add Detailed Lead</h4>
+                          <p className="text-muted small mb-0">Create complete lead profile</p>
+                        </div>
+
+                        <button
+                          className="btn btn-light rounded-circle"
+                          onClick={() => setNewLeadModal(false)}
+                        >
+                          ✕
+                        </button>
+                      </div>
+
+                      {/* BODY */}
+                      <div className="p-4 overflow-auto" style={{ flex: 1 }}>
+
+                        {/* SECTION 1 */}
+                        <div className="mb-5">
+                          <h6 className="text-primary fw-bold text-uppercase mb-4" style={{ fontSize: '0.75rem', letterSpacing: '1px' }}>
+                            <span className="bg-primary bg-opacity-10 px-2 py-1 rounded">01</span> Client & Property
+                          </h6>
+
+                          <div className="row g-2">
+                            <div className="col-md-6">
+                              <label className="label-style">Client / Prospect</label>
+                              <input className="form-control input-style"
+                                value={newLead.clientType}
+                                onChange={(e) => setNewLead({ ...newLead, clientType: e.target.value })}
+                              />
+                            </div>
+
+                            <div className="col-md-6">
+                              <label className="label-style">Property</label>
+                              <input className="form-control input-style"
+                                value={newLead.property}
+                                onChange={(e) => setNewLead({ ...newLead, property: e.target.value })}
+                              />
+                            </div>
+
+                            <div className="col-md-6">
+                              <label className="label-style">Unit</label>
+                              <input className="form-control input-style"
+                                value={newLead.unit}
+                                onChange={(e) => setNewLead({ ...newLead, unit: e.target.value })}
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* SECTION 2 */}
+                        <div className="mb-5">
+                          <h6 className="text-primary fw-bold text-uppercase mb-3" style={{ fontSize: '0.75rem', letterSpacing: '1px' }}>
+                            <span className="bg-primary bg-opacity-10 px-2 py-1 rounded">02</span> Pricing
+                          </h6>
+
+                          <div className="row g-3">
+                            <div className="col-md-4">
+                              <label className="label-style">Quoted Price</label>
+                              <input type="number" className="form-control input-style"
+                                value={newLead.quotedPrice}
+                                onChange={(e) => setNewLead({ ...newLead, quotedPrice: e.target.value })}
+                              />
+                            </div>
+
+                            <div className="col-md-4">
+                              <label className="label-style">Negotiated Price</label>
+                              <input type="number" className="form-control input-style"
+                                value={newLead.negotiatedPrice}
+                                onChange={(e) => setNewLead({ ...newLead, negotiatedPrice: e.target.value })}
+                              />
+                            </div>
+
+                            <div className="col-md-4">
+                              <label className="label-style">Discount %</label>
+                              <input type="number" className="form-control input-style"
+                                value={newLead.discount}
+                                onChange={(e) => setNewLead({ ...newLead, discount: e.target.value })}
+                              />
+                            </div>
+                            <div className="col-md-4">
+                              <label className="label-style">Status</label>
+                              <select className="form-select input-style"
+                                value={newLead.Leadtatus}
+                                onChange={(e) => setNewLead({ ...newLead, Leadtatus: e.target.value })}
+                              >
+                                <option value="open">Open</option>
+                                <option value="won">Won</option>
+                                <option value="lost">Lost</option>
+                              </select>
+                            </div>
+
+                            <div className="col-md-4">
+                              <label className="label-style">Payment Plan</label>
+                              <input className="form-control input-style"
+                                value={newLead.paymentPlan}
+                                onChange={(e) => setNewLead({ ...newLead, paymentPlan: e.target.value })}
+                              />
+                            </div>
+
+                            <div className="col-md-4">
+                              <label className="label-style">Consultant</label>
+                              <input className="form-control input-style"
+                                value={newLead.consultant}
+                                onChange={(e) => setNewLead({ ...newLead, consultant: e.target.value })}
+                              />
+                            </div>
+                          </div>
+
+
+
+                        </div>
+
+
+                        {/* SECTION 3 */}
+                        <div>
+                          <h6 className="text-primary  text-uppercase mb-4" style={{ fontSize: '0.75rem', letterSpacing: '1px' }}>
+                            <span className="bg-primary bg-opacity-10 px-2 py-1 rounded">03</span> Notes
+                          </h6>
+                          <label className="label-style">Special Conditions / Remarks</label>
+                          <textarea
+                            className="form-control input-style"
+                            rows="3"
+                            value={newLead.notes}
+                            onChange={(e) => setNewLead({ ...newLead, notes: e.target.value })}
+                          />
+                        </div>
+
+                      </div>
+
+                      {/* FOOTER */}
+                      <div className="p-4 border-top d-flex gap-3 justify-content-end">
+                        <button className="btn btn-light px-5"
+                          onClick={() => {
+                            setNewLeadModal(false);
+                            localStorage.removeItem("newLeadDraft");
+                          }}>
+                          Discard
+                        </button>
+
+                        <button className="btn btn-dark px-5"
+                          onClick={() => {
+
+                            if (!newLead.property || !newLead.clientType) {
+                              alert("Property and Client are required");
+                              return;
+                            }
+
+                            const updatedLead = [
+                              ...Lead,
+                              {
+                                ...newLead,
+                                id: Date.now(),
+                                date: new Date().toLocaleDateString()
+                              }
+                            ];
+
+                            setLead(updatedLead);
+                            localStorage.setItem("Lead", JSON.stringify(updatedLead));
+
+                            // reset form
+                            setNewLead({
+                              clientType: "",
+                              property: "",
+                              unit: "",
+                              quotedPrice: "",
+                              negotiatedPrice: "",
+                              Leadtatus: "Open",
+                              consultant: "",
+                              notes: "",
+                              date: ""
+                            });
+
+                            setNewLeadModal(false);
+                          }}>
+                          Save Lead
+                        </button>
+                      </div>
+
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </div>
-        ))}
-      </div>
 
-      {/* Visual Analytics */}
-      <div className="row g-4 mb-5">
-        <div className="col-lg-8">
-          <div className="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
-            <div className="d-flex justify-content-between align-items-center mb-4">
-              <h6 className="fw-bold m-0 text-slate-800">Performance Real-time</h6>
-              <button className="btn btn-sm btn-light border-0 text-muted px-3 rounded-pill">Monthly <i className="bi bi-chevron-down ms-1"></i></button>
-            </div>
-            <div style={{ height: "280px" }}>
-              <Line data={lineData} options={chartOptions} />
-            </div>
-          </div>
-        </div>
-        <div className="col-lg-4">
-          <div className="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
-            <h6 className="fw-bold mb-4 text-slate-800">Task Allocation</h6>
-            <div style={{ height: "280px" }}>
-              <Bar data={barData} options={chartOptions} />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Projects Table */}
-      <div className="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 bg-white">
-        <div className="card-header bg-white border-0 p-4 d-flex justify-content-between align-items-center">
-          <h6 className="fw-bold mb-0 text-slate-800">Recent Project Streams</h6>
-          <button className="btn btn-sm text-indigo-600 fw-bold border-0 p-0">View All Analytics</button>
-        </div>
-        <div className="table-responsive">
-          <table className="table table-hover align-middle mb-0">
-            <thead className="bg-slate-50 text-slate-500">
-              <tr className="small fw-bold text-uppercase tracking-wider">
-                <th className="ps-4 border-0 py-3">Project Detail</th>
-                <th className="border-0">Stream Status</th>
-                <th className="border-0">Owner</th>
-                <th className="border-0">Priority</th>
-                <th className="border-0" style={{ width: "200px" }}>Completion</th>
-                <th className="pe-4 border-0 text-end">Manage</th>
-              </tr>
-            </thead>
-            <tbody className="border-top-0">
-              {currentProjects.map((p, index) => (
-                <tr key={index} className="border-bottom-0">
-                  <td className="ps-4 py-3">
-                    <div className="fw-bold text-slate-900">{p.name}</div>
-                    <div className="text-muted" style={{ fontSize: "0.75rem" }}>Start: {p.start}</div>
-                  </td>
-                  <td>
-                    <span className={`badge rounded-pill px-3 py-2 fw-medium bg-opacity-10 ${p.status === "Completed" ? "bg-success text-success" : p.status === "Ongoing" ? "bg-primary text-primary" : "bg-warning text-warning"}`}>{p.status}</span>
-                  </td>
-                  <td className="text-slate-600 small fw-medium">{p.owner}</td>
-                  <td>
-                    <div className={`d-inline-flex align-items-center gap-1 small fw-bold text-${p.priority === "Critical" ? "danger" : p.priority === "High" ? "warning" : "info"}`}><div style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: "currentColor" }}></div>{p.priority}</div>
-                  </td>
-                  <td>
-                    <div className="d-flex align-items-center gap-2">
-                      <div className="progress flex-grow-1" style={{ height: "6px", borderRadius: 10, backgroundColor: "#f1f5f9" }}><div className="progress-bar rounded-pill" style={{ width: `${p.progress}%`, backgroundColor: p.progress === 100 ? "#10b981" : "#6366f1" }}></div></div>
-                      <span className="small fw-bold text-slate-500">{p.progress}%</span>
-                    </div>
-                  </td>
-                  <td className="pe-4 text-end">
-                    <button className="btn btn-icon btn-light rounded-circle border-0 me-2"><i className="bi bi-eye"></i></button>
-                    <button className="btn btn-icon btn-soft-indigo rounded-circle border-0"><i className="bi bi-pencil-square"></i></button>
-                  </td>
+          {/* TABLE */}
+          <div className="table-responsive">
+            <table className="table table-borderless align-middle mb-0">
+              <thead>
+                <tr className="bg-light">
+                  <th className="ps-4 py-3">Property</th>
+                  <th className="py-3">Unit</th>
+                  <th className="py-3">Client</th>
+                  <th className="py-3">Price</th>
+                  <th className="py-3">Status</th>
+                  <th className="py-3">Assigned To</th>
+                  <th className="py-3">Date</th>
+                  <th className="pe-4 py-3 text-end">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <div className="px-4 py-3 border-top bg-white d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3">
-          <div className="d-flex align-items-center">
-            <div className="bg-indigo-50 text-indigo-600 rounded-pill px-3 py-1 me-2 d-flex align-items-center" style={{ fontSize: "0.75rem", fontWeight: "600" }}><span className="p-1 bg-indigo-500 rounded-circle me-2"></span>Live Stream</div>
-            <span className="text-slate-500 small fw-medium">Showing page <span className="text-slate-900 fw-bold">{currentPage}</span> of <span className="text-slate-900 fw-bold">{totalPages}</span></span>
-          </div>
-          <div className="d-flex align-items-center gap-2">
-            <button className="btn btn-modern-nav" disabled={currentPage === 1} onClick={() => setCurrentPage(prev => prev - 1)}><i className="bi bi-chevron-left me-1"></i>Prev</button>
-            <button className="btn btn-modern-nav" disabled={currentPage === totalPages} onClick={() => setCurrentPage(prev => prev + 1)}>Next<i className="bi bi-chevron-right ms-1"></i></button>
+              </thead>
+              <tbody>
+                {filteredLead.map((lead) => (
+                  <tr key={lead.id} style={{ borderBottom: '1px solid #eee' }}>
+
+                    {/* Property */}
+                    <td className="ps-4 py-3 fw-semibold">
+                      {lead.property || "-"}
+                    </td>
+
+                    {/* Unit */}
+                    <td className="py-3">
+                      {lead.unit || "-"}
+                    </td>
+
+                    {/* Client */}
+                    <td className="py-3">
+                      {lead.clientType || "-"}
+                    </td>
+
+                    {/* Price */}
+                    <td className="py-3 fw-bold text-success">
+                      ₹ {lead.negotiatedPrice || lead.quotedPrice || "0"}
+                    </td>
+
+                    {/* Status */}
+                    <td className="py-3">
+                      <span className={`badge ${lead.Leadtatus === "Won"
+                        ? "bg-success"
+                        : lead.Leadtatus === "Lost"
+                          ? "bg-danger"
+                          : "bg-warning text-dark"
+                        }`}>
+                        {lead.Leadtatus}
+                      </span>
+                    </td>
+
+                    {/* Assigned To */}
+                    <td className="py-3">
+                      {lead.consultant || "-"}
+                    </td>
+
+                    {/* Date */}
+                    <td className="py-3 text-muted small">
+                      {lead.date || "-"}
+                    </td>
+
+                    {/* Actions */}
+                    <td className="pe-4 py-3 text-end">
+                      <button className="btn btn-light btn-sm">
+                        ⋮
+                      </button>
+                    </td>
+
+                  </tr>
+                ))}
+
+                {filteredLead.length === 0 && (
+                  <tr>
+                    <td colSpan="8" className="text-center py-4 text-muted">
+                      No Lead found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
-
-      {/* Footer */}
-      <footer className="mt-5 py-3 px-0 border-top d-flex justify-content-between align-items-center">
-        <p className="mb-0 text-slate-400 small">© 2026 <span className="fw-bold text-slate-900">KiritTech</span>. Engineering for Tomorrow.</p>
-        <div className="d-flex gap-4">
-          {["System Status", "Support Docs", "Contact HQ"].map((link) => (
-            <a href="#" key={link} className="text-decoration-none text-slate-500 small hover-indigo transition-all">{link}</a>
-          ))}
-        </div>
-      </footer>
 
       <style>{`
-        .hover-lift { transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .hover-lift:hover { transform: translateY(-5px); }
-        .btn-soft-indigo { background: rgba(99, 102, 241, 0.1); color: #6366f1; }
-        .hover-indigo:hover { color: #6366f1 !important; }
-        .btn-modern-nav { background: #ffffff; border: 1px solid #e2e8f0; color: #475569; font-size: 0.85rem; font-weight: 600; padding: 0.5rem 1rem; border-radius: 10px; transition: all 0.2s ease; display: flex; align-items: center; }
-        .btn-modern-nav:hover:not(:disabled) { background: #f8fafc; border-color: #cbd5e1; color: #1e293b; transform: translateY(-1px); }
-        .btn-modern-nav:disabled { opacity: 0.5; cursor: not-allowed; background: #f1f5f9; }
-        .btn-icon { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; padding: 0; }
-        .bg-indigo-50 { background-color: #eef2ff; }
-        .text-indigo-600 { color: #4f46e5; }
-        .bg-indigo-500 { background-color: #6366f1; }
-      `}</style>
+                .fw-black { font-weight: 900; }
+                .tracking-wider { letter-spacing: 0.05em; }
+                .extra-small { font-size: 0.8rem; }
+                .lead-row:hover { 
+                    background-color: #fcfdfe !important; 
+                    transform: scale(1.002);
+                    transition: all 0.2s ease;
+                }
+                .btn-icon-hover:hover {
+                    background-color: #f1f3f5 !important;
+                    color: #000 !important;
+                }
+            `}</style>
     </div>
   );
-}
+};
 
-export default Lead;
+// Reusable Stat Component
+const StatCard = ({ icon, label, value, color }) => (
+  <div className="d-flex align-items-center gap-3 px-3 py-1">
+    <div style={{ color }}>{icon}</div>
+    <div>
+      <div className="text-muted" style={{ fontSize: '0.7rem', fontWeight: '700', textTransform: 'uppercase' }}>{label}</div>
+      <div className="fw-black" style={{ fontSize: '1.1rem', color: '#111827' }}>{value}</div>
+    </div>
+  </div>
+);
+
+export default Leads;

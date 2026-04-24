@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate } from "react-router-dom";
 import { UserPlus } from "lucide-react";
+import { getAllData } from "../utils/indexedDB";
 
 // --- IndexedDB Helper ---
 const DB_NAME = "bicrm_db";
@@ -62,7 +63,7 @@ function Organization() {
 
   const [newEmployee, setNewEmployee] = useState(getInitialEmployeeState());
   const [dateTime, setDateTime] = useState(new Date());
-  const [view, setView] = useState("grid");
+  const [view, setView] = useState(localStorage.getItem("organization_view") || "grid");
   const [search, setSearch] = useState("");
   const [filterDept, setFilterDept] = useState("All");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -139,20 +140,47 @@ function Organization() {
     return () => clearInterval(timer);
   }, []);
 
-  const getBadgeClass = (dept) => {
-    switch (dept) {
-      case "IT":
-        return "bg-primary";
-      case "HR":
-        return "bg-success";
-      case "Finance":
-        return "bg-warning text-dark";
-      case "Marketing":
-        return "bg-info text-dark";
-      default:
-        return "bg-secondary";
+  useEffect(() => {
+    localStorage.setItem("organization_view", view);
+  }, [view]);
+
+  const [metrics, setMetrics] = useState({
+    totalProducts: 0,
+    totalUsers: 0,
+    totalSales: 0,
+    activeOrders: 0,
+  });
+
+  const loadMetrics = async () => {
+    try {
+      // 1. Total Products (using areas as a proxy)
+      const areas = await getAllData("areas").catch(() => []);
+      
+      // 2. Total Users (using contacts)
+      const contacts = await getAllData("contacts").catch(() => []);
+      
+      // 3. Total Sales (from invoices in localStorage)
+      const savedInvoices = localStorage.getItem("invoiceList");
+      const invoiceList = savedInvoices ? JSON.parse(savedInvoices) : [];
+      const totalSales = invoiceList.reduce((sum, inv) => sum + (Number(inv.total) || 0), 0);
+      
+      // 4. Active Orders (using tasks)
+      const tasks = await getAllData("tasks").catch(() => []);
+
+      setMetrics({
+        totalProducts: areas.length || 0,
+        totalUsers: contacts.length || 0,
+        totalSales: totalSales || 0,
+        activeOrders: tasks.length || 0,
+      });
+    } catch (err) {
+      console.error("Error loading metrics:", err);
     }
   };
+
+  useEffect(() => {
+    loadMetrics();
+  }, [users]); // Reload metrics when users (organizations) change as well
 
   const filteredUsers = useMemo(() => {
     return users.filter(
@@ -226,45 +254,45 @@ function Organization() {
       <div className="row g-3 mb-4">
         {/* Total Products */}
         <div className="col-md-3">
-          <div className="card text-center shadow-sm p-3 border-0 border-start border-primary border-3">
+          <div className="card text-center shadow-sm p-3 border-0 border-start border-primary border-3 h-100">
             <div className="text-primary mb-2">
               <i className="bi bi-box-seam fs-4"></i>
             </div>
             <h6 className="text-muted fw-bold">Total Products</h6>
-            <h3 className="mb-0">45</h3>
+            <h3 className="mb-0">{metrics.totalProducts}</h3>
           </div>
         </div>
 
         {/* Total Users */}
         <div className="col-md-3">
-          <div className="card text-center shadow-sm p-3 border-0 border-start border-success border-3">
+          <div className="card text-center shadow-sm p-3 border-0 border-start border-success border-3 h-100">
             <div className="text-success mb-2">
               <i className="bi bi-people fs-4"></i>
             </div>
             <h6 className="text-muted fw-bold">Total Users</h6>
-            <h3 className="mb-0">12</h3>
+            <h3 className="mb-0">{metrics.totalUsers}</h3>
           </div>
         </div>
 
         {/* Total Sales */}
         <div className="col-md-3">
-          <div className="card text-center shadow-sm p-3 border-0 border-start border-warning border-3">
+          <div className="card text-center shadow-sm p-3 border-0 border-start border-warning border-3 h-100">
             <div className="text-warning mb-2">
               <i className="bi bi-currency-dollar fs-4"></i>
             </div>
             <h6 className="text-muted fw-bold">Total Sales</h6>
-            <h3 className="mb-0">$9,500</h3>
+            <h3 className="mb-0">${metrics.totalSales.toLocaleString()}</h3>
           </div>
         </div>
 
         {/* Active Orders */}
         <div className="col-md-3">
-          <div className="card text-center shadow-sm p-3 border-0 border-start border-danger border-3">
+          <div className="card text-center shadow-sm p-3 border-0 border-start border-danger border-3 h-100">
             <div className="text-danger mb-2">
               <i className="bi bi-cart-check fs-4"></i>
             </div>
             <h6 className="text-muted fw-bold">Active Orders</h6>
-            <h3 className="mb-0">24</h3>
+            <h3 className="mb-0">{metrics.activeOrders}</h3>
           </div>
         </div>
       </div>
@@ -444,6 +472,88 @@ function Organization() {
 
 
       {/* LIST VIEW */}
+      {!loading && !error && view === "list" && (
+        <div className="card border-0 shadow-sm" style={{ borderRadius: "15px", overflow: "hidden" }}>
+          <div className="table-responsive">
+            <table className="table table-hover align-middle mb-0">
+              <thead className="bg-light">
+                <tr>
+                  <th className="ps-4 py-3">Organization</th>
+                  <th className="py-3">Contact Name</th>
+                  <th className="py-3">Email</th>
+                  <th className="py-3">Phone</th>
+                  <th className="py-3">Department</th>
+                  <th className="py-3 text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredUsers.map((user, index) => (
+                  <tr key={user.id || index}>
+                    <td className="ps-4">
+                      <div className="d-flex align-items-center">
+                        <div
+                          className="rounded-circle me-3 d-flex align-items-center justify-content-center"
+                          style={{
+                            width: "35px",
+                            height: "35px",
+                            backgroundColor: "#eef2ff",
+                            color: "#4f46e5",
+                            fontWeight: "600",
+                            fontSize: "0.85rem"
+                          }}
+                        >
+                          {user.organization?.charAt(0).toUpperCase() || "O"}
+                        </div>
+                        <span className="fw-semibold">{user.organization}</span>
+                      </div>
+                    </td>
+                    <td>{user.name}</td>
+                    <td>{user.email}</td>
+                    <td>{user.number}</td>
+                    <td>
+                      <span className="badge bg-soft-primary text-primary px-3 py-2" style={{ backgroundColor: "#eef2ff" }}>
+                        {user.details}
+                      </span>
+                    </td>
+                    <td className="text-center">
+                      <div className="d-flex justify-content-center gap-2">
+                        <button
+                          onClick={() => {
+                            localStorage.setItem("selectedOrgId", user.id);
+                            localStorage.setItem("selectedOrgName", user.organization);
+                            navigate("/project", {
+                              state: { orgId: user.id, orgName: user.organization }
+                            });
+                          }}
+                          className="btn btn-sm btn-outline-primary"
+                          title="View Projects"
+                        >
+                          <i className="bi bi-eye"></i>
+                        </button>
+                        <button
+                          onClick={() => handleEdit(user)}
+                          className="btn btn-sm btn-outline-secondary"
+                          title="Edit"
+                        >
+                          <i className="bi bi-pencil"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {filteredUsers.length === 0 && (
+                  <tr>
+                    <td colSpan="6" className="text-center py-5 text-muted">
+                      No organizations found.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
       {isModalOpen && (
         <div key={editUserId || "new"}>
           {/*  <div> */}
